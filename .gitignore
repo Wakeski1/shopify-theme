@@ -1,0 +1,18 @@
+# Shopify theme ignores
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
+node_modules/
+.env
+
+# Visual Studio
+.vs/
+.vscode/
+*.suo
+*.user
+*.sln
+*.slnx
+
+# Other
+*.zip

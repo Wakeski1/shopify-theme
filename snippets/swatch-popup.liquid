@@ -1,0 +1,22 @@
+<div js-swatch-popup class="swatch-popup" id="popup-{{ cr_variant.id }}">
+    <div class="popup-main">
+        <div class="popup__header">
+            <h5 class="popup__title">SELECT CASE TYPE</h5>
+            <span class="close" js-popup-close>
+                <svg class="d-block" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"> <g fill="none" fill-rule="evenodd"> <path d="M0 0H24V24H0z"></path> <path fill="#000" d="M2 11H22V12H2z" transform="rotate(45 12 11.5)"></path> <path fill="#000" d="M2 11H22V12H2z" transform="rotate(-45 12 11.5)"></path> </g></svg>
+            </span>
+        </div>
+        <div class="popup_body">
+            {% if swatch_popup.popup_image != blank %}
+                <div class="popup__img">
+                    {{ swatch_popup.popup_image | image_url: width: 500 | image_tag }}
+                </div>
+            {% endif %}
+            {% if swatch_popup.popup_rte != blank %}
+                <div class="popup__rte">
+                    {{ swatch_popup.popup_rte | metafield_tag }}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>

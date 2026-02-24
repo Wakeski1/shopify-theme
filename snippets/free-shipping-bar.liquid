@@ -1,0 +1,75 @@
+{%- liquid
+  assign free_shipping_threshold_value = settings.cart_free_shipping_bar_threshold
+  assign cart_free_shipping_heading_size = settings.cart_free_shipping_heading_size
+  assign cart_free_shipping_bar_style = settings.cart_free_shipping_bar_style
+
+  assign currencies_using_comma_decimals = 'BIF,CLP,DJF,GNF,ISK,JPY,KMF,KRW,PYG,RWF,UGX,UYI,VND,VUV,XAF,XOF,XPF' | split: ','
+  assign uses_comma_decimals = false
+
+  if currencies_using_comma_decimals contains cart.currency.iso_code
+    assign uses_comma_decimals = true
+  endif
+
+  if uses_comma_decimals
+    assign cart_total = cart.total_price | money_without_currency | replace: '.', '' | replace: ',', '.' | times: 1000
+  else
+    if shop.money_format contains 'comma_separator' or shop.money_format contains 'space_separator'
+      assign cart_total = cart.total_price | money_without_currency | replace: ',', '.'
+    else
+      assign cart_total = cart.total_price | money_without_currency | replace: ',', '' | times: 1.0
+    endif
+  endif
+-%}
+
+{% if settings.progress_based_on_quantity %}
+  {% assign cart_count = cart.item_count %}
+  {% if cart_count < 2 %}
+      {% assign remaining_count = 2 | minus: cart.item_count %}
+      {% assign progress_percentage = cart_count | times: 50 %}
+      {% assign progress_messsage = settings.qty_threshold_label | replace: "[item_count]", remaining_count %}
+  {% else %}
+    {% assign progress_percentage = 100 %}
+     {% assign progress_messsage = settings.qty_threshold_label_success %}
+  {% endif %}
+  <free-shipping-bar
+    class='free-shipping-bar'
+  >
+    <div
+      class='free-shipping-bar__title {{ cart_free_shipping_heading_size }}'
+    >
+      {{ progress_messsage }}
+    </div>
+
+    <div class='free-shipping-bar__progress {% if cart_free_shipping_bar_style == "dashed" %} free-shipping-bar__progress--dashed {% endif %}'>
+      <div class='free-shipping-bar__progress-bar'></div>
+      <div class='free-shipping-bar__progress-bar-dots' style="--gsc-freeshipping-bar-percent: {{ progress_percentage }}%;"></div>
+    </div>
+    <div class="free-shipping-bar-icon{% if progress_percentage == 100 %} is-fill{% endif %}">
+      <svg width="64px" height="64px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M11.0287 2.53961C11.6327 2.20402 12.3672 2.20402 12.9713 2.5396L20.4856 6.71425C20.8031 6.89062 21 7.22524 21 7.5884V15.8232C21 16.5495 20.6062 17.2188 19.9713 17.5715L12.9713 21.4604C12.3672 21.796 11.6327 21.796 11.0287 21.4604L4.02871 17.5715C3.39378 17.2188 3 16.5495 3 15.8232V7.5884C3 7.22524 3.19689 6.89062 3.51436 6.71425L11.0287 2.53961Z" stroke="#000000" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"></path> <path d="M3 7L12 12M12 12L21 7M12 12V21.5" stroke="#000000" stroke-width="1" stroke-linejoin="round"></path> <path d="M7.5 9.5L16.5 4.5" stroke="#000000" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"></path> <path d="M6 12.3281L9 14" stroke="#000000" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>
+    </div>
+  </free-shipping-bar>
+{% else %}
+  <free-shipping-bar
+    class='free-shipping-bar'
+    data-achieved-message='{{ 'general.free_shipping_bar.store_front.achieved_message' | t }}'
+    data-progress-message='{{ 'general.free_shipping_bar.store_front.progress_message' | t }}'
+    data-threshold='{{ free_shipping_threshold_value }}'
+    data-cart-total='{{ cart_total }}'
+    data-currency-format='{{ shop.money_format | strip_html }}'
+  >
+    <div
+      class='free-shipping-bar__title {{ cart_free_shipping_heading_size }}'
+      data-free-shipping-bar-message
+    >
+      {{ message }}
+    </div>
+
+    <div class='free-shipping-bar__progress {% if cart_free_shipping_bar_style == "dashed" %} free-shipping-bar__progress--dashed {% endif %}'>
+      <div class='free-shipping-bar__progress-bar'></div>
+      <div class='free-shipping-bar__progress-bar-dots' data-free-shipping-progress-bar-dots></div>
+    </div>
+    <div class="free-shipping-bar-icon" data-free-shipping-progress-bar-icon>
+      <svg width="64px" height="64px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M11.0287 2.53961C11.6327 2.20402 12.3672 2.20402 12.9713 2.5396L20.4856 6.71425C20.8031 6.89062 21 7.22524 21 7.5884V15.8232C21 16.5495 20.6062 17.2188 19.9713 17.5715L12.9713 21.4604C12.3672 21.796 11.6327 21.796 11.0287 21.4604L4.02871 17.5715C3.39378 17.2188 3 16.5495 3 15.8232V7.5884C3 7.22524 3.19689 6.89062 3.51436 6.71425L11.0287 2.53961Z" stroke="#000000" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"></path> <path d="M3 7L12 12M12 12L21 7M12 12V21.5" stroke="#000000" stroke-width="1" stroke-linejoin="round"></path> <path d="M7.5 9.5L16.5 4.5" stroke="#000000" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"></path> <path d="M6 12.3281L9 14" stroke="#000000" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>
+    </div>
+  </free-shipping-bar>
+{% endif %}

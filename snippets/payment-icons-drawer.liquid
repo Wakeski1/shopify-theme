@@ -1,0 +1,35 @@
+<style>
+  /* Drawer-specific spacing */
+  #payment-icons-drawer {
+    display:block;           /* ensure it behaves as a block */
+    width:100%;
+    padding-top:12px !important; /* use padding instead of margin */
+  }
+
+  #payment-icons-drawer ul{
+    display:flex !important;
+    flex-wrap:wrap;
+    gap:10px;
+    align-items:center;
+    justify-content:center;
+    list-style:none;
+    padding:0; margin:0; width:100%;
+  }
+  #payment-icons-drawer li{ display:flex; }
+  #payment-icons-drawer svg{
+    height:21px; width:auto; display:block;
+    filter: drop-shadow(0 1px 3px rgba(0,0,0,.12));
+  }
+</style>
+
+<div id="payment-icons-drawer" aria-label="Accepted payment methods">
+  <ul role="list">
+    <li>{{ 'apple_pay'        | payment_type_svg_tag }}</li>
+    <li>{{ 'google_pay'       | payment_type_svg_tag }}</li>
+    <li>{{ 'paypal'           | payment_type_svg_tag }}</li>
+    <li>{{ 'visa'             | payment_type_svg_tag }}</li>
+    <li>{{ 'master'           | payment_type_svg_tag }}</li>
+    <li>{{ 'american_express' | payment_type_svg_tag }}</li>
+    <li>{{ 'shopify_pay'      | payment_type_svg_tag }}</li>
+  </ul>
+</div>

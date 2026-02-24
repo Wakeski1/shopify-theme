@@ -1,0 +1,31 @@
+<div js-swatch-popup class="swatch-popup" id="popup-case">
+    <div class="popup-main">
+        <div class="popup__header">
+            <h5 class="popup__title">SELECT CASE TYPE</h5>
+            <span class="close" js-popup-close>
+                <svg class="d-block" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"> <g fill="none" fill-rule="evenodd"> <path d="M0 0H24V24H0z"></path> <path fill="#000" d="M2 11H22V12H2z" transform="rotate(45 12 11.5)"></path> <path fill="#000" d="M2 11H22V12H2z" transform="rotate(-45 12 11.5)"></path> </g></svg>
+            </span>
+        </div>
+        <div class="popup_body">
+            {% if case_popup.images != blank %}
+                <div class="image__grid">
+                    {% for image in case_popup.images.value %}
+                        <div class="popup_img">
+                            <div class="img__wrap">
+                                {{ image | image_url: width: 500 | image_tag }}
+                            </div>
+                            {% if case_popup.images_title.value[forloop.index0] != blank %}
+                                <h5 class="img__caption">{{ case_popup.images_title.value[forloop.index0]  }}</h5>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            {% if case_popup.contents != blank %}
+                <div class="popup__rte">
+                    {{ case_popup.contents | metafield_tag }}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>

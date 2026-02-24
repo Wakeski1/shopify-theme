@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang='{{ request.locale.iso_code }}'>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <meta name='viewport' content='width=device-width,initial-scale=1'>
+    <meta name='theme-color' content='{{ settings.default_color_scheme }}'>
+    {%- if page_description -%}
+      <meta name='description' content='{{ page_description | escape }}'>
+    {%- endif -%}
+    {%- if settings.favicon != blank -%}
+      <link rel='icon' type='image/png' href='{{ settings.favicon | image_url: width: 32, height: 32 }}'>
+    {%- endif -%}
+    {% render 'meta-tags' %}
+    <link rel='canonical' href='{{ canonical_url }}'>
+    <link rel='preconnect' href='https://cdn.shopify.com' crossorigin>
+    <link rel='preconnect' href='https://fonts.shopifycdn.com' crossorigin>
+
+
+
+
+
+    <title>
+      {{ page_title }}
+      {%- if current_tags %} &ndash; tagged "{{ current_tags | join: ', ' }}"{% endif -%}
+      {%- if current_page != 1 %} &ndash; Page {{ current_page }}{% endif -%}
+      {%- unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless -%}
+    </title>
+
+    {% render 'css-variables' %}
+
+    {% liquid
+      render 'vite-tag' with 'main.css', preload_stylesheet: true
+      render 'vite-tag' with 'main.ts'
+    %}
+    
+    {% render 'fonts' %}
+
+    {{ content_for_header }}
+
+    {{ 'tepo-custom.css' | asset_url | stylesheet_tag }} 
+
+    <script>
+(function () {
+
+  // MOBILE CHECK — only run below 901px
+  function isMobile() {
+    return window.innerWidth <= 900;
+  }
+
+  function bindBanners(root) {
+    if (!isMobile()) return; // ← block desktop
+
+    root.querySelectorAll('.image-banner').forEach(function (banner) {
+      if (banner.__clickBound) return; // avoid rebinding
+
+      // Prefer banner CTA link
+      var link = banner.querySelector('a.image-banner__btn-link[href]') 
+              || banner.querySelector('a[href]');
+      if (!link) return;
+
+      var url = link.getAttribute('href');
+      banner.style.cursor = 'pointer';
+
+      banner.addEventListener('click', function (e) {
+        // Let normal controls/links work as-is
+        if (e.target.closest('a, button, input, textarea, select, video')) return;
+        window.location.href = url;
+      });
+
+      banner.__clickBound = true;
+    });
+  }
+
+  // Initial bind
+  document.addEventListener('DOMContentLoaded', function () {
+    if (isMobile()) bindBanners(document);
+  });
+
+  // Rebind on section refresh (Shopify Editor)
+  document.addEventListener('shopify:section:load', function (e) {
+    if (isMobile()) bindBanners(e.target);
+  });
+
+  document.addEventListener('shopify:section:select', function (e) {
+    if (isMobile()) bindBanners(e.target);
+  });
+
+})();
+</script>
+
+
+
+  </head>
+  <body class='color-{{ settings.default_color_scheme }} round-level-{{ settings.round_level }} {% if settings.round_level != "0" %} round-style {% endif %}'>
+    <a id='SkipContent' class='visually-hidden skip-to-content-link btn btn--lg btn--primary' href='#MainContent'>
+      {{ 'accessibility.skip_to_text' | t }}
+    </a>
+
+    {% if template.name == 'password' %}
+      {% sections 'password-header-group' %}
+    {% else %}
+      {% sections 'main-header-group' %}
+      {% sections 'main-aside-group' %}
+    {% endif %}
+
+    {% sections 'popup-group' %}
+
+    <main id='MainContent'>
+      {{ content_for_layout }}
+    </main>
+
+    {%- if template.name == 'password' -%}
+      {% sections 'password-footer-group' %}
+    {%- else -%}
+      {% sections 'main-footer-group' %}
+    {%- endif -%}
+
+    {%- render 'dialog-components' -%}
+    {%- render 'interface-controls' -%}
+    {%- render 'page-overlays' -%}
+
+    <div id='Portal'></div>
+    {%- render 'inject-routes' -%}
+    {%- render 'save-global-data-in-global-scope' -%}
+    <script>
+      window.lazySizesConfig = window.lazySizesConfig || {}
+      window.lazySizesConfig.loadMode = 1
+    </script>
+
+    <script>
+      setInterval(() => {
+        const drawer = document.querySelector("cart-drawer.is-opened, #CartDrawer.is-opened");
+        if (!drawer) return;
+
+        drawer.querySelectorAll('.cart-item__option').forEach(option => {
+          const label = option.querySelector('div:first-child');
+          const value = option.querySelector('div:last-child');
+
+          if (!label || !value) return;
+
+          if (label.textContent.trim().toLowerCase() === 'link:') {
+            const text = value.textContent.trim();
+
+            if (value.querySelector("a")) return;
+
+            if (text) {
+              value.innerHTML = `&nbsp;<a href="${text}" target="_blank" rel="noopener noreferrer">Your link</a>`;
+            }
+          }
+        });
+      }, 200);
+
+    </script>
+  </body>
+</html>

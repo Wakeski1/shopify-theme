@@ -1,0 +1,105 @@
+{{ 'product-cs-options.css' | asset_url | stylesheet_tag }}
+
+{% assign product_form_id = 'product-form-' | append: product.id | append: '-' | append: section.id %}
+
+<div class="tcustomizer__product-form tcustomizer__widget">
+  <div class="tcustomizer__customization-form">
+
+    {% for block in section.blocks %}
+        {% if block.type == "text_field" %}
+            <div class="tcustomizer__field" {{ block.shopify_attributes }} js-field-block>
+                <label class="tcustomizer__field__heading">
+                <span>{{ block.settings.label }}</span>
+
+                {% if block.settings.required %}
+                    <span class="tcustomizer__asterisk">*</span>
+                {% endif %}
+
+                {% if block.settings.tooltip != blank %}
+                    <span class="tcustomizer__tooltip tcustomizer__tooltip__icon">
+                        <svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10 20a10 10 0 1 1 0-20 10 10 0 0 1 0 20zm2-13c0 .28-.21.8-.42 1L10 9.58c-.57.58-1 1.6-1 2.42v1h2v-1c0-.29.21-.8.42-1L13 9.42c.57-.58 1-1.6 1-2.42a4 4 0 1 0-8 0h2a2 2 0 1 1 4 0zm-3 8v2h2v-2H9z"></path></svg>
+
+                        <div class="tcustomizer__tooltip--content tcustomizer__tooltip--content-top">
+                            <span class="tooltip__text">
+                            {{ block.settings.tooltip }}
+                            </span>
+                        </div>
+                        <div class="tcustomizer__tooltip--arrow tcustomizer__tooltip--arrow-top"></div>
+                    </span>
+                {% endif %}
+                </label>
+
+                <div class="tcustomizer__field__input">
+                <div class="tcustomizer__text-field-wrapper">
+                    <input
+                    class="tcustomizer__text-field"
+                    type="text"
+                    placeholder="{{ block.settings.placeholder }}"
+                    maxlength="{{ block.settings.max_length }}"
+                    name="properties[{{ block.settings.label }}]"
+                    form="{{ product_form_id }}"
+                    {% if block.settings.required %}required{% endif %}
+                    data-max="{{ block.settings.max_length }}"
+                    js-product-cs-field
+                    >
+
+                    <span class="tcustomizer__text-field--total-characters">
+                    0/{{ block.settings.max_length }}
+                    </span>
+                </div>
+
+                <div class="tcustomizer__text-field--subinfo">
+                    {% if block.settings.required %}
+                        <span class="tcustomizer__text-field--error hidden" js-error-message>Enter a link</span>
+                    {% endif %}
+                    <span class="tcustomizer__text-field--max-characters">
+                    Limit {{ block.settings.max_length }} characters
+                    </span>
+                </div>
+                </div>
+            </div>
+        {% endif %}
+    {% endfor %}
+
+  </div>
+</div>
+
+<script>
+    document.addEventListener('input', (e) => {
+        const field = e.target.closest('.tcustomizer__text-field');
+        if (!field) return;
+
+        const max = field.dataset.max;
+        const counter = field
+            .closest('.tcustomizer__text-field-wrapper')
+            .querySelector('.tcustomizer__text-field--total-characters');
+
+        counter.textContent = `${field.value.length}/${max}`;
+
+        
+    });
+
+    document.addEventListener('focusin', (e) => {
+        const field = e.target.closest('.tcustomizer__text-field');
+        if (!field) return;
+
+        setTimeout(() => {
+                field.scrollIntoView({
+                behavior: 'smooth',
+                block: 'center',
+            });
+        }, 300);
+    });
+
+    document.addEventListener('click', (e) => {
+        const fields = document.querySelectorAll("[js-product-cs-field]");
+        fields?.forEach(el => {
+            const productForm = document.querySelector("[js-product-form]");
+
+            if(productForm) {
+                const id = productForm.getAttribute("id");
+                el.setAttribute("form", id)
+            }
+        })
+    })
+</script>
